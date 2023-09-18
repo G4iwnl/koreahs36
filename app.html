@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>고려고 3학년 6반 인강</title>
+    <style>
+        /* 글꼴을 외부에서 불러와서 사용하는 방법 */
+        @font-face {
+            font-family: 'CustomFont';
+            src: url('https://download.blog.naver.com/open/56c34afae9b7b26e42adc0f4cc2e50288ada29cb8a/hwE9tnL_lxJBnZzurcrd_Y7hR78GYLjRJojq7pnE7ZHXibgR99ef-JuTLu0hGqLvoKjYkXxIU7fbDJc6JDNSyA/CookieRun%20Regular.ttf') format('truetype');
+        }
+
+        body {
+            font-family: 'CustomFont', sans-serif; /* 글꼴 적용 */
+        }
+
+        /* 표의 각 칸을 구별하기 위한 스타일 */
+        #seatTable {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        
+        #seatTable th, #seatTable td {
+            border: 2px solid #000; /* 굵은 선 스타일 지정 */
+            padding: 8px;
+            text-align: center;
+        }
+
+        /* 표의 일부 내용 초기에는 숨김 */
+        #seatTable th:nth-child(-n+3),
+        #seatTable tr:nth-child(n+2) td:nth-child(-n+4) {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>고려고 3학년 6반 인강</h1>
+    <p>인터넷 강의를 듣고 싶은 사람들의 번호를 입력하세요.<br>각 번호를 엔터로 구분하세요.</p>
+    <textarea id="participantsInput" placeholder="인강을 듣고 싶은 사람들의 번호"></textarea>
+    <button onclick="assignSeats()">시작</button><br>
+    <div id="resultLabel"></div><br>
+
+    <!-- 추가된 표 형식을 위한 테이블 요소 -->
+    <table id="seatTable">
+        <!-- 표의 내용은 시작 버튼을 누른 후에 추가됩니다. -->
+    </table><br>
+
+    <!-- "패배자"와 패배자 목록을 표시할 엘리먼트 -->
+    <div id="losersLabel"></div><br>
+    <div id="losersList"></div><br>
+
+    <script>
+        function assignSeats() {
+            const participantsInput = document.getElementById("participantsInput");
+            const resultLabel = document.getElementById("resultLabel");
+            const seatTable = document.getElementById("seatTable");
+            const losersLabel = document.getElementById("losersLabel");
+            const losersList = document.getElementById("losersList");
+            const participantsText = participantsInput.value;
+            const participants = participantsText.split('\n').map(x => parseInt(x.trim()));
+
+            if (participants.length >= 9) {
+                const selectedParticipants = getRandomParticipants(participants, 9);
+                resultLabel.innerHTML = "인터넷 강의를 듣을 9명의 학생은 다음과 같습니다:";
+
+                // 표 생성
+                seatTable.innerHTML = `
+                    <tr>
+                        <th></th>
+                        <th>첫번째 책상</th>
+                        <th>두번째 책상</th>
+                        <th>세번째 책상</th>
+                    </tr>
+                    <tr>
+                        <td>1교시</td>
+                        <td>${selectedParticipants[0] ? `학생 ${selectedParticipants[0]}번` : ''}</td>
+                        <td>${selectedParticipants[1] ? `학생 ${selectedParticipants[1]}번` : ''}</td>
+                        <td>${selectedParticipants[2] ? `학생 ${selectedParticipants[2]}번` : ''}</td>
+                    </tr>
+                    <tr>
+                        <td>2교시</td>
+                        <td>${selectedParticipants[3] ? `학생 ${selectedParticipants[3]}번` : ''}</td>
+                        <td>${selectedParticipants[4] ? `학생 ${selectedParticipants[4]}번` : ''}</td>
+                        <td>${selectedParticipants[5] ? `학생 ${selectedParticipants[5]}번` : ''}</td>
+                    </tr>
+                    <tr>
+                        <td>3교시</td>
+                        <td>${selectedParticipants[6] ? `학생 ${selectedParticipants[6]}번` : ''}</td>
+                        <td>${selectedParticipants[7] ? `학생 ${selectedParticipants[7]}번` : ''}</td>
+                        <td>${selectedParticipants[8] ? `학생 ${selectedParticipants[8]}번` : ''}</td>
+                    </tr>
+                `;
+
+                // 패배자 목록 업데이트
+                const losers = participants.filter(student => !selectedParticipants.includes(student));
+                if (losers.length > 0) {
+                    losersLabel.innerHTML = "패배자:";
+                    losersList.innerHTML = losers.join('<br>');
+                } else {
+                    losersLabel.innerHTML = ''; // 패배자 레이블 숨김
+                    losersList.innerHTML = ''; // 패배자 목록 숨김
+                }
+
+                // 결과 표시 후 표 열기
+                showTableHeaders();
+            } else {
+                resultLabel.innerHTML = "인터넷 강의를 듣고 싶은 사람은 9명 이상이어야 합니다.";
+                // 결과 표 및 패배자 목록 초기화
+                seatTable.innerHTML = '';
+                losersLabel.innerHTML = '';
+                losersList.innerHTML = '';
+            }
+        }
+
+        function getRandomParticipants(participants, count) {
+            const shuffledParticipants = participants.slice();
+            for (let i = shuffledParticipants.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledParticipants[i], shuffledParticipants[j]] = [shuffledParticipants[j], shuffledParticipants[i]];
+            }
+            return shuffledParticipants.slice(0, count);
+        }
+
+        function showTableHeaders() {
+            // 표의 각 칸을 굵은 선으로 표시
+            const tableHeaders = document.querySelectorAll("#seatTable th");
+            const tableCells = document.querySelectorAll("#seatTable td");
+            for (const header of tableHeaders) {
+                header.style.display = "table-cell";
+            }
+            for (const cell of tableCells) {
+                cell.style.display = "table-cell";
+            }
+        }
+    </script>
+</body>
+</html>
