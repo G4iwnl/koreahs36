@@ -17,45 +17,65 @@
         #result {
             font-size: 2em;
             text-align: center;
-            color: blue; 
+            color: blue;
+        }
+
+        .checkmark {
+            color: green;
+            visibility: hidden;
+        }
+
+        /* 체크박스 스타일 설정 */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        #probabilityUpCheckbox {
+            transform: scale(1.5); /* 체크박스 크기를 키움 */
+            margin-right: 5px; /* 체크박스 오른쪽 여백 설정 */
         }
     </style>
 </head>
 <body>
     <h1>추첨 페이지</h1>
-    <label>
-        <input type="checkbox" id="probabilityUpCheckbox"> 전민준 확률 UP
-    </label>
+    <div class="checkbox-container">
+        <input type="checkbox" id="probabilityUpCheckbox">
+        <label for="probabilityUpCheckbox">전민준 확률 UP</label>
+    </div>
+
     <button onclick="drawNumber()">추첨</button>
+
     <div id="result"></div>
 
     <script>
-        // 학생 번호와 이름 매핑
+
         const students = {
-            1: '강동현',
-            2: '국윤상',
-            3: '김도빈',
-            4: '김동연',
-            5: '김비오',
-            6: '김준흠',
-            7: '남지웅',
-            8: '문지우',
-            9: '박건희',
-            10: '박시우',
-            11: '박정원',
-            12: '박준형',
-            13: '배주현',
-            14: '오진우',
-            15: '우상욱',
-            16: '유수호',
-            17: '이우민',
-            18: '이현송',
-            19: '임광현',
-            20: '장상훈',
-            21: '전민준',
-            22: '전유성',
-            23: '정시혁',
-            24: '진휘언'
+            1:'강동현',
+            2:'국윤상',
+            3:'김도빈',
+            4:'김동연',
+            5:'김비오',
+            6:'김준흠',
+            7:'남지웅',
+            8:'문지우',
+            9:'박건희',
+            10:'박시우', 
+            11:'박정원', 
+            12:'박준형', 
+            13:'배주현', 
+            14:'오진우', 
+            15:'우상욱', 
+            16:'유수호', 
+            17:'이우민',  
+            18:'이현송',  
+            19:'임광현',  
+            20:'장상훈',  
+            21:'전민준',  
+            22:'전유성',  
+            23:'정시혁',  
+            24:'진휘언'
         };
 
         function drawNumber() {
@@ -76,10 +96,17 @@
             }
 
             const resultElement = document.getElementById("result");
-
             const studentName = students[randomNumber];
+            resultElement.innerHTML = `추첨된 번호: ${randomNumber} (${studentName}) <span class="checkmark">&#10004;</span>`;
+            
+            // 바로 여기에 추가합니다.
+            const checkmarkElement = resultElement.querySelector(".checkmark");
+            checkmarkElement.style.visibility ="visible";
 
-            resultElement.textContent = `추첨된 번호: ${randomNumber} (${studentName})`;
+            // 1초 후에 체크마크를 숨김
+            setTimeout(() => {
+                checkmarkElement.style.visibility ="hidden";
+            },1000);
         }
     </script>
 </body>
