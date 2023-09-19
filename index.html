@@ -113,7 +113,7 @@
                 let selectedParticipants = getRandomParticipants(participants, totalSeats);
                 let selectedParticipantsCopy = [...selectedParticipants]; 
 
-                resultLabel.innerHTML = `인터넷 강의를 듣을 ${totalSeats}명의 학생은 다음과 같습니다 (${wednesdayMode ? "수요일" : saturdayMode ? "토요일" : "수요일/토요일"}):`;
+                resultLabel.innerHTML = `인터넷 강의를 듣을 학생은 다음과 같습니다 (${wednesdayMode ? "수요일" : saturdayMode ? "토요일" : "수요일/토요일"}):`;
 
                 let tableHTML = `<tr><th></th>${cols.map(col => `<th>${col}</th>`).join('')}</tr>`;
                 for (let i = 0; i < rows.length; i++) {
@@ -140,7 +140,7 @@
                 showTableHeaders();
 
             } else {
-                resultLabel.innerHTML = `인터넷 강의를 듣고 싶은 사람은 ${wednesdayMode || saturdayMode ? "36명 이상" : "최소 9명 이상"}이어야 합니다.`;
+                resultLabel.innerHTML = `인터넷 강의를 듣고 싶은 학생의 번호를 입력해주세요.`;
                 seatTable.innerHTML = '';
                 losersLabel.innerHTML = '';
                 losersList.innerHTML = '';
