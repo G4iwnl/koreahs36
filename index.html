@@ -5,32 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>고려고 3학년 6반 인강</title>
     <style>
-        /* 글꼴을 외부에서 불러와서 사용하는 방법 */
         @font-face {
             font-family: 'CustomFont';
             src: url('https://docs.google.com/uc?export=download&id=1P9MKIFRXwa6g6a43Q6OOjvJVZYhWxN2S&confirm=t') format('truetype');
         }
 
         body {
-            font-family: 'CustomFont', sans-serif; /* 글꼴 적용 */
+            font-family: 'CustomFont', sans-serif; 
         }
 
-        /* 표의 각 칸을 구별하기 위한 스타일 */
         #seatTable {
             border-collapse: collapse;
             width: 100%;
         }
 
         #seatTable th, #seatTable td {
-            border: 2px solid #000; /* 굵은 선 스타일 지정 */
+            border: 2px solid #000; 
             padding: 8px;
             text-align: center;
         }
 
-        /* 표의 일부 내용 초기에는 숨김 */
-        #seatTable th:nth-child(-n+3),
-        #seatTable tr:nth-child(n+2) td:nth-child(-n+4) {
-            display: none;
+        .blue-text {
+            color: blue;
         }
     </style>
 </head>
@@ -39,19 +35,49 @@
     <h1>고려고 3학년 6반 인강</h1>
     <p>인터넷 강의를 듣고 싶은 사람들의 번호를 입력하세요.<br>각 번호를 엔터로 구분하세요.</p>
     <textarea id="participantsInput" placeholder="인강을 듣고 싶은 사람들의 번호"></textarea>
+    <label for="wednesdayMode">수요일</label>
+    <input type="checkbox" id="wednesdayMode">
+    <label for="saturdayMode">토요일</label>
+    <input type="checkbox" id="saturdayMode"><br>
+
     <button onclick="assignSeats()">시작</button><br>
+
     <div id="resultLabel"></div><br>
 
-    <!-- 추가된 표 형식을 위한 테이블 요소 -->
     <table id="seatTable">
-        <!-- 표의 내용은 시작 버튼을 누른 후에 추가됩니다. -->
     </table><br>
 
-    <!-- "패배자"와 패배자 목록을 표시할 엘리먼트 -->
-    <div id="losersLabel"></div><br>
+    <div id="losersLabel"></div><br/>
     <div id="losersList"></div><br>
 
     <script>
+        const studentData = {
+            1: '강동현',
+            2: '국윤상',
+            3: '김도빈',
+            4: '김동연',
+            5: '김비오',
+            6: '김준흠',
+            7: '남지웅',
+            8: '문지우',
+            9: '박건희',
+            10: '박시우',
+            11: '박정원',
+            12: '박준형',
+            13: '배주현',
+            14: '오진우',
+            15: '우상욱',
+            16: '유수호',
+            17: '이우민',
+            18: '이현송',
+            19: '임광현',
+            20: '장상훈',
+            21: '전민준',
+            22: '전유성',
+            23: '정시혁',
+            24: '진휘언'
+        };
+
         function assignSeats() {
             const participantsInput = document.getElementById("participantsInput");
             const resultLabel = document.getElementById("resultLabel");
@@ -59,55 +85,62 @@
             const losersLabel = document.getElementById("losersLabel");
             const losersList = document.getElementById("losersList");
             const participantsText = participantsInput.value;
-            const participants = participantsText.split('\n').map(x => parseInt(x.trim()));
+            const participants = participantsText.split('\n').map(x => x.trim()).filter(x => x !== '');
+            const wednesdayMode = document.getElementById("wednesdayMode").checked;
+            const saturdayMode = document.getElementById("saturdayMode").checked;
 
-            if (participants.length >= 9) {
-                const selectedParticipants = getRandomParticipants(participants, 9);
-                resultLabel.innerHTML = "인터넷 강의를 듣을 9명의 학생은 다음과 같습니다:";
+            let rows, cols;
+            if (wednesdayMode && saturdayMode) {
+                resultLabel.innerHTML = "<span class='blue-text'>오류: 수요일 모드와 토요일 모드를 동시에 활성화할 수 없습니다.</span>";
+                seatTable.innerHTML = '';
+                losersLabel.innerHTML = '';
+                losersList.innerHTML = '';
+                return;
+            } else if (wednesdayMode) {
+                rows = ['8교시', '9교시', '야자 1교시', '야자 2교시', '야자 3교시'];
+                cols = ['1번책상', '2번책상', '3번책상'];
+            } else if (saturdayMode) {
+                rows = ['1교시', '2-1교시', '2-2교시', '3교시', '4교시', '5교시', '6교시'];
+                cols = ['1번책상', '2번책상', '3번책상'];
+            } else {
+                rows = ['야자 1교시', '야자 2교시', '야자 3교시'];
+                cols = ['1번책상', '2번책상', '3번책상'];
+            }
 
-                // 표 생성
-                seatTable.innerHTML = `
-                    <tr>
-                        <th></th>
-                        <th>첫번째 책상</th>
-                        <th>두번째 책상</th>
-                        <th>세번째 책상</th>
-                    </tr>
-                    <tr>
-                        <td>1교시</td>
-                        <td>${selectedParticipants[0] ? `학생 ${selectedParticipants[0]}번` : ''}</td>
-                        <td>${selectedParticipants[1] ? `학생 ${selectedParticipants[1]}번` : ''}</td>
-                        <td>${selectedParticipants[2] ? `학생 ${selectedParticipants[2]}번` : ''}</td>
-                    </tr>
-                    <tr>
-                        <td>2교시</td>
-                        <td>${selectedParticipants[3] ? `학생 ${selectedParticipants[3]}번` : ''}</td>
-                        <td>${selectedParticipants[4] ? `학생 ${selectedParticipants[4]}번` : ''}</td>
-                        <td>${selectedParticipants[5] ? `학생 ${selectedParticipants[5]}번` : ''}</td>
-                    </tr>
-                    <tr>
-                        <td>3교시</td>
-                        <td>${selectedParticipants[6] ? `학생 ${selectedParticipants[6]}번` : ''}</td>
-                        <td>${selectedParticipants[7] ? `학생 ${selectedParticipants[7]}번` : ''}</td>
-                        <td>${selectedParticipants[8] ? `학생 ${selectedParticipants[8]}번` : ''}</td>
-                    </tr>
-                `;
+            const totalSeats = rows.length * cols.length;
 
-                // 패배자 목록 업데이트
-                const losers = participants.filter(student => !selectedParticipants.includes(student));
+            if (participants.length > 0) {
+                let selectedParticipants = getRandomParticipants(participants, totalSeats);
+                let selectedParticipantsCopy = [...selectedParticipants]; 
+
+                resultLabel.innerHTML = `인터넷 강의를 듣을 ${totalSeats}명의 학생은 다음과 같습니다 (${wednesdayMode ? "수요일" : saturdayMode ? "토요일" : "수요일/토요일"}):`;
+
+                let tableHTML = `<tr><th></th>${cols.map(col => `<th>${col}</th>`).join('')}</tr>`;
+                for (let i = 0; i < rows.length; i++) {
+                    tableHTML += `<tr><td>${rows[i]}</td>`;
+                    for (let j = 0; j < cols.length; j++) {
+                        const studentNumber = selectedParticipants.shift();
+                        const studentName = studentData[studentNumber];
+                        tableHTML += `<td>${studentName || ''}</td>`;
+                    }
+                    tableHTML += `</tr>`;
+                }
+                seatTable.innerHTML = tableHTML;
+
+                let losers = participants.filter(student => !selectedParticipantsCopy.includes(student));
+
                 if (losers.length > 0) {
-                    losersLabel.innerHTML = "패배자:";
-                    losersList.innerHTML = losers.join('<br>');
+                    losersLabel.innerHTML = "<span class='blue-text'>패배자:</span>";
+                    losersList.innerHTML = replaceStudentNumbersWithNames(losers).join('<br>');
                 } else {
-                    losersLabel.innerHTML = ''; // 패배자 레이블 숨김
-                    losersList.innerHTML = ''; // 패배자 목록 숨김
+                    losersLabel.innerHTML = ''; 
+                    losersList.innerHTML = ''; 
                 }
 
-                // 결과 표시 후 표 열기
                 showTableHeaders();
+
             } else {
-                resultLabel.innerHTML = "인터넷 강의를 듣고 싶은 사람은 9명 이상이어야 합니다.";
-                // 결과 표 및 패배자 목록 초기화
+                resultLabel.innerHTML = `인터넷 강의를 듣고 싶은 사람은 ${wednesdayMode || saturdayMode ? "36명 이상" : "최소 9명 이상"}이어야 합니다.`;
                 seatTable.innerHTML = '';
                 losersLabel.innerHTML = '';
                 losersList.innerHTML = '';
@@ -124,15 +157,19 @@
         }
 
         function showTableHeaders() {
-            // 표의 각 칸을 굵은 선으로 표시
             const tableHeaders = document.querySelectorAll("#seatTable th");
             const tableCells = document.querySelectorAll("#seatTable td");
+
             for (const header of tableHeaders) {
                 header.style.display = "table-cell";
             }
             for (const cell of tableCells) {
                 cell.style.display = "table-cell";
             }
+        }
+
+        function replaceStudentNumbersWithNames(participants) {
+            return participants.map(studentNumber => studentData[studentNumber]);
         }
     </script>
 </body>
