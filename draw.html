@@ -11,27 +11,75 @@
         }
 
         body {
-            font-family: 'CustomFont', sans-serif; /* 다운로드한 글꼴 적용 */
+            font-family: 'CustomFont', sans-serif;
         }
 
         #result {
-            font-size: 3em;
+            font-size: 2em;
             text-align: center;
+            color: blue; 
         }
     </style>
 </head>
 <body>
     <h1>추첨 페이지</h1>
+    <label>
+        <input type="checkbox" id="probabilityUpCheckbox"> 전민준 확률 UP
+    </label>
     <button onclick="drawNumber()">추첨</button>
     <div id="result"></div>
 
     <script>
+        // 학생 번호와 이름 매핑
+        const students = {
+            1: '강동현',
+            2: '국윤상',
+            3: '김도빈',
+            4: '김동연',
+            5: '김비오',
+            6: '김준흠',
+            7: '남지웅',
+            8: '문지우',
+            9: '박건희',
+            10: '박시우',
+            11: '박정원',
+            12: '박준형',
+            13: '배주현',
+            14: '오진우',
+            15: '우상욱',
+            16: '유수호',
+            17: '이우민',
+            18: '이현송',
+            19: '임광현',
+            20: '장상훈',
+            21: '전민준',
+            22: '전유성',
+            23: '정시혁',
+            24: '진휘언'
+        };
+
         function drawNumber() {
             const min = 1;
             const max = 24;
-            const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+            let randomNumber;
+
+            const probabilityUpCheckbox = document.getElementById("probabilityUpCheckbox");
+            if (probabilityUpCheckbox.checked) {
+                const randomValue = Math.random();
+                if (randomValue <= 0.3) {
+                    randomNumber = 21;
+                } else {
+                    randomNumber = Math.floor(Math.random() * 24) + 1;
+                }
+            } else {
+                randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
             const resultElement = document.getElementById("result");
-            resultElement.textContent = `추첨된 번호: ${randomNumber}`;
+
+            const studentName = students[randomNumber];
+
+            resultElement.textContent = `추첨된 번호: ${randomNumber} (${studentName})`;
         }
     </script>
 </body>
