@@ -110,8 +110,17 @@
             const totalSeats = rows.length * cols.length;
 
             if (participants.length > 0) {
-                let selectedParticipants = getRandomParticipants(participants, totalSeats);
-                let selectedParticipantsCopy = [...selectedParticipants]; 
+                let uniqueParticipants = [...new Set(participants)];
+                let duplicatedParticipants = participants.filter((item, index) => participants.indexOf(item) !== index);
+
+                let selectedParticipants = getRandomParticipants(uniqueParticipants, totalSeats);
+                let selectedParticipantsCopy = [...selectedParticipants];
+
+                if (selectedParticipants.length < totalSeats) {
+                    let additionalSeats = totalSeats - selectedParticipants.length;
+                    let additionalParticipants = getRandomParticipants(duplicatedParticipants, additionalSeats);
+                    selectedParticipants = selectedParticipants.concat(additionalParticipants);
+                }
 
                 resultLabel.innerHTML = `인터넷 강의를 듣을 학생은 다음과 같습니다 (${wednesdayMode ? "수요일" : saturdayMode ? "토요일" : "수/토 X"}):`;
 
@@ -133,8 +142,8 @@
                     losersLabel.innerHTML = "<span class='blue-text'>패배자:</span>";
                     losersList.innerHTML = replaceStudentNumbersWithNames(losers).join('<br>');
                 } else {
-                    losersLabel.innerHTML = ''; 
-                    losersList.innerHTML = ''; 
+                    losersLabel.innerHTML = '';
+                    losersList.innerHTML = '';
                 }
 
                 showTableHeaders();
