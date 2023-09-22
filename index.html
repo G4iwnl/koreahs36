@@ -106,8 +106,8 @@
                 rows = ['야자 1교시', '야자 2교시', '야자 3교시'];
                 cols = ['1번책상', '2번책상', '3번책상'];
             }
-
             const totalSeats = rows.length * cols.length;
+            let seatReferences = Array.from({length: totalSeats}, (_, i) => i);  
 
             if (participants.length > 0) {
                 let uniqueParticipants = [...new Set(participants)];
@@ -128,13 +128,19 @@
                 for (let i = 0; i < rows.length; i++) {
                     tableHTML += `<tr><td>${rows[i]}</td>`;
                     for (let j = 0; j < cols.length; j++) {
-                        const studentNumber = selectedParticipants.shift();
-                        const studentName = studentData[studentNumber];
-                        tableHTML += `<td>${studentName || ''}</td>`;
+                        tableHTML += `<td id="seat${i * cols.length + j}"></td>`;  // Assign each cell a unique ID
                     }
                     tableHTML += `</tr>`;
                 }
                 seatTable.innerHTML = tableHTML;
+
+                seatReferences.sort(() => Math.random() - 0.5);   // Shuffle the array
+
+                for(let k=0; k<selectedParticipants.length;k++){
+                    const studentNumber = selectedParticipants[k];
+                    const studentName = studentData[studentNumber];
+                    document.getElementById(`seat${seatReferences[k]}`).innerText=studentName || '';   // Use shuffled references to assign students
+                 }
 
                 let losers = participants.filter(student => !selectedParticipantsCopy.includes(student));
 
