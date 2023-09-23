@@ -49,6 +49,14 @@
 
     <div id="losersLabel"></div><br/>
     <div id="losersList"></div><br>
+    
+    <button id="togglePrevResult">이전 결과 열기/접기</button><br>
+    
+    <div id="prevResult" style="display: none;">
+        <h2>이전 추첨 결과</h2>
+        <table id="prevSeatTable">
+        </table><br>
+    </div>
 
     <script>
         const studentData = {
@@ -77,6 +85,9 @@
             23: '정시혁',
             24: '진휘언'
         };
+        
+        let rowColMapping; // 이 변수를 선언합니다.
+        let prevRowColMapping; // 이 변수도 선언합니다.
 
         function assignSeats() {
             const participantsInput = document.getElementById("participantsInput");
@@ -88,6 +99,10 @@
             const participants = participantsText.split('\n').map(x => x.trim()).filter(x => x !== '');
             const wednesdayMode = document.getElementById("wednesdayMode").checked;
             const saturdayMode = document.getElementById("saturdayMode").checked;
+            
+            if (rowColMapping) {
+                prevRowColMapping = JSON.parse(JSON.stringify(rowColMapping));
+            }
 
             let rows, cols;
             if (wednesdayMode && saturdayMode) {
@@ -106,54 +121,51 @@
                 rows = ['야자 1교시', '야자 2교시', '야자 3교시'];
                 cols = ['1번책상', '2번책상', '3번책상'];
             }
-            const totalSeats = rows.length * cols.length;
-            let seatReferences = Array.from({length: totalSeats}, (_, i) => i);  
+
+            rowColMapping = {};
 
             if (participants.length > 0) {
                 let uniqueParticipants = [...new Set(participants)];
-                let duplicatedParticipants = participants.filter((item, index) => participants.indexOf(item) !== index);
 
-                let selectedParticipants = getRandomParticipants(uniqueParticipants, totalSeats);
-                let selectedParticipantsCopy = [...selectedParticipants];
+                for (let row of rows) {
+                    rowColMapping[row] = {};
+                    for (let col of cols) {
+                        rowColMapping[row][col] = null;
+                    }
+                }
 
-                if (selectedParticipants.length < totalSeats) {
-                    let additionalSeats = totalSeats - selectedParticipants.length;
-                    let additionalParticipants = getRandomParticipants(duplicatedParticipants, additionalSeats);
-                    selectedParticipants = selectedParticipants.concat(additionalParticipants);
+                let allSeats = rows.flatMap(row => cols.map(col => [row, col]));
+                allSeats.sort(() => Math.random() - 0.5); // Shuffle all seats
+
+                for (let i = 0; i < Math.min(uniqueParticipants.length, allSeats.length); i++) {
+                    let [row, col] = allSeats[i];
+                    let studentNumber = uniqueParticipants[i];
+                    rowColMapping[row][col] = studentData[studentNumber];
                 }
 
                 resultLabel.innerHTML = `인터넷 강의를 듣을 학생은 다음과 같습니다 (${wednesdayMode ? "수요일" : saturdayMode ? "토요일" : "수/토 X"}):`;
 
                 let tableHTML = `<tr><th></th>${cols.map(col => `<th>${col}</th>`).join('')}</tr>`;
-                for (let i = 0; i < rows.length; i++) {
-                    tableHTML += `<tr><td>${rows[i]}</td>`;
-                    for (let j = 0; j < cols.length; j++) {
-                        tableHTML += `<td id="seat${i * cols.length + j}"></td>`;  // Assign each cell a unique ID
+                for (let row of rows) {
+                    tableHTML += `<tr><td>${row}</td>`;
+                    for (let col of cols) {
+                        tableHTML += `<td>${rowColMapping[row][col] || ''}</td>`;
                     }
                     tableHTML += `</tr>`;
                 }
                 seatTable.innerHTML = tableHTML;
 
-                seatReferences.sort(() => Math.random() - 0.5);   // Shuffle the array
-
-                for(let k=0; k<selectedParticipants.length;k++){
-                    const studentNumber = selectedParticipants[k];
-                    const studentName = studentData[studentNumber];
-                    document.getElementById(`seat${seatReferences[k]}`).innerText=studentName || '';   // Use shuffled references to assign students
-                 }
-
-                let losers = participants.filter(student => !selectedParticipantsCopy.includes(student));
+                let losers = participants.filter(student => !Object.values(rowColMapping).flatMap(Object.values).includes(studentData[student]));
 
                 if (losers.length > 0) {
                     losersLabel.innerHTML = "<span class='blue-text'>패배자:</span>";
-                    losersList.innerHTML = replaceStudentNumbersWithNames(losers).join('<br>');
+                    losersList.innerHTML = losers.map(studentNumber => studentData[studentNumber]).join('<br>');
                 } else {
                     losersLabel.innerHTML = '';
                     losersList.innerHTML = '';
                 }
 
-                showTableHeaders();
-
+                updatePrevResult();  // 이 줄을 추가해 이전 결과를 업데이트합니다.
             } else {
                 resultLabel.innerHTML = `인터넷 강의를 듣고 싶은 학생의 번호를 입력해주세요.`;
                 seatTable.innerHTML = '';
@@ -186,6 +198,35 @@
         function replaceStudentNumbersWithNames(participants) {
             return participants.map(studentNumber => studentData[studentNumber]);
         }
+        
+        function updatePrevResult() {
+            const prevSeatTable = document.getElementById("prevSeatTable");
+
+            if (!prevRowColMapping) return;
+
+            let prevRows = Object.keys(prevRowColMapping);
+            let prevCols = Object.keys(prevRowColMapping[prevRows[0]]);
+            
+            let prevTableHTML = `<tr><th></th>${prevCols.map(col => `<th>${col}</th>`).join('')}</tr>`;
+            for (let row of prevRows) {
+                prevTableHTML += `<tr><td>${row}</td>`;
+                for (let col of prevCols) {
+                    prevTableHTML += `<td>${prevRowColMapping[row][col] || ''}</td>`;
+                }
+                prevTableHTML += `</tr>`;
+            }
+            prevSeatTable.innerHTML = prevTableHTML;
+        }
+
+        document.getElementById("togglePrevResult").addEventListener("click", function() {
+            const prevResultDiv = document.getElementById("prevResult");
+            if (prevResultDiv.style.display === "none") {
+                prevResultDiv.style.display = "block";
+            } else {
+                prevResultDiv.style.display = "none";
+            }
+        });
+
     </script>
 </body>
 </html>
