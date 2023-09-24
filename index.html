@@ -217,6 +217,27 @@
             }
             prevSeatTable.innerHTML = prevTableHTML;
         }
+        
+        function saveResultToLocalStorage() {
+            if (rowColMapping) {
+                localStorage.setItem('previousResult', JSON.stringify(rowColMapping));
+            }
+        }
+
+        function loadResultFromLocalStorage() {
+            const savedResult = localStorage.getItem('previousResult');
+            if (savedResult) {
+                prevRowColMapping = JSON.parse(savedResult);
+                updatePrevResult();
+            }
+        }
+
+        // 페이지가 로드될 때 이전 결과를 불러옵니다.
+        window.addEventListener('load', loadResultFromLocalStorage);
+
+        // 결과가 갱신될 때마다 로컬 스토리지에 저장합니다.
+        window.addEventListener('beforeunload', saveResultToLocalStorage);
+
 
         document.getElementById("togglePrevResult").addEventListener("click", function() {
             const prevResultDiv = document.getElementById("prevResult");
