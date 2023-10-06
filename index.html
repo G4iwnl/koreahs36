@@ -77,6 +77,8 @@
             23: '정시혁',
             24: '진휘언'
         };
+        
+        let allocatedSeats = {}; // 이미 할당된 책상을 저장하는 객체
 
         function assignSeats() {
             const participantsInput = document.getElementById("participantsInput");
@@ -89,6 +91,8 @@
             const wednesdayMode = document.getElementById("wednesdayMode").checked;
             const saturdayMode = document.getElementById("saturdayMode").checked;
 
+            allocatedSeats = {}; // 할당된 책상 초기화
+            
             let rows, cols;
             if (wednesdayMode && saturdayMode) {
                 resultLabel.innerHTML = "<span class='blue-text'>오류: 수요일 모드와 토요일 모드를 동시에 활성화할 수 없습니다.</span>";
@@ -153,7 +157,6 @@
                 }
 
                 showTableHeaders();
-
             } else {
                 resultLabel.innerHTML = `인터넷 강의를 듣고 싶은 학생의 번호를 입력해주세요.`;
                 seatTable.innerHTML = '';
@@ -186,6 +189,7 @@
         function replaceStudentNumbersWithNames(participants) {
             return participants.map(studentNumber => studentData[studentNumber]);
         }
+        
     </script>
 </body>
 </html>
