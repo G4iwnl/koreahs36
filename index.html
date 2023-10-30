@@ -35,7 +35,7 @@
     <h1>고려고 3학년 6반 인강(v 1.5)</h1>
     <p>인터넷 강의를 듣고 싶은 사람들의 번호를 입력하세요.<br>각 번호를 엔터로 구분하세요.</p>
     <textarea id="participantsInput" placeholder="인강을 듣고 싶은 사람들의 번호"></textarea>
-    <label for="wednesdayMode">수요일</label>
+    <label for="wednesdayMode">수능대비</label>
     <input type="checkbox" id="wednesdayMode">
     <label for="saturdayMode">토요일</label>
     <input type="checkbox" id="saturdayMode"><br>
@@ -95,13 +95,13 @@
             
             let rows, cols;
             if (wednesdayMode && saturdayMode) {
-                resultLabel.innerHTML = "<span class='blue-text'>오류: 수요일 모드와 토요일 모드를 동시에 활성화할 수 없습니다.</span>";
+                resultLabel.innerHTML = "<span class='blue-text'>오류: 수능대비 모드와 토요일 모드를 동시에 활성화할 수 없습니다.</span>";
                 seatTable.innerHTML = '';
                 losersLabel.innerHTML = '';
                 losersList.innerHTML = '';
                 return;
             } else if (wednesdayMode) {
-                rows = ['8교시', '9교시', '야자 1교시', '야자 2교시', '야자 3교시'];
+                rows = ['9교시', '야자 1교시', '야자 2교시', '야자 3교시'];
                 cols = ['1번책상', '2번책상', '3번책상'];
             } else if (saturdayMode) {
                 rows = ['1교시', '2-1교시', '2-2교시', '3교시', '4교시', '5교시', '6교시'];
@@ -126,7 +126,7 @@
                     selectedParticipants = selectedParticipants.concat(additionalParticipants);
                 }
 
-                resultLabel.innerHTML = `인터넷 강의를 듣을 학생은 다음과 같습니다 (${wednesdayMode ? "수요일" : saturdayMode ? "토요일" : "수/토 X"}):`;
+                resultLabel.innerHTML = `인터넷 강의를 듣을 학생은 다음과 같습니다 (${wednesdayMode ? "수능대비" : saturdayMode ? "토요일" : "수/토 X"}):`;
 
                 let tableHTML = `<tr><th></th>${cols.map(col => `<th>${col}</th>`).join('')}</tr>`;
                 for (let i = 0; i < rows.length; i++) {
